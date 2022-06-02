@@ -12,9 +12,17 @@ self.addEventListener("install", (e) => {
     .open(STATIC_CACHE)
     .then((cache) => cache.addAll(APP_SHELL));
 
-    e.wait.Until(cacheStatic);
+    e.waitUntil(cacheStatic);
 }); 
 
-self.addEventListener("fetch", e => {
-    console.log("fectch! ", e.request);
-})
+self.addEventListener("fetch", (e) => {
+    console.log("fetch! ", e.request);
+    e.respondWith(
+      caches
+        .match(e.request)
+        .then((res) => {
+          return res || fetch(e.request);
+        })
+        .catch(console.log)
+    );
+});
